@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wassan Dental & Skin Care Clinic - Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --indigo-primary: #3f51b5;
+            --indigo-dark: #303f9f;
+            --bg-light: #f4f7f9;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            font-size: 13px;
+        }
+
+        .sidebar {
+            background-color: var(--indigo-primary);
+            height: 100vh;
+            width: 240px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            z-index: 50;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid transparent;
+            font-size: 0.85rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: var(--indigo-dark);
+            border-left: 4px solid #fff;
+        }
+
+        .card {
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        header {
+            background: white;
+            padding: 0.5rem 1.25rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: justify-content;
+            justify-content: space-between;
+            align-items: center;
+            display: flex;
+        }
+
+        .table-container {
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 6px 10px;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.8rem;
+            color: #334155;
+        }
+
+        input, select, textarea {
+            outline: none;
+            font-size: 0.8rem;
+        }
+
+        .profile-tab-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 2px solid transparent;
+        }
+
+        .profile-tab-btn.active {
+            color: var(--indigo-primary);
+            border-bottom-color: var(--indigo-primary);
+        }
+
+        .badge {
+            padding: 2px 6px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="p-4 text-xs font-bold border-b border-indigo-400 flex flex-col gap-1">
+            <span class="flex items-center gap-2"><i class="fas fa-tooth"></i> WASSAN DENTAL</span>
+            <span>& SKIN CARE CLINIC</span>
+        </div>
+        <nav class="mt-4">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                <i class="fas fa-chart-line w-5"></i> Dashboard
+            </div>
+            <div class="nav-item" onclick="switchTab('booking')">
+                <i class="fas fa-calendar-plus w-5"></i> New Booking
+            </div>
+            <div class="nav-item" onclick="switchTab('patients')">
+                <i class="fas fa-user-injured w-5"></i> Patients
+            </div>
+            <div class="nav-item" onclick="switchTab('dues')">
+                <i class="fas fa-hand-holding-usd w-5 text-red-300"></i> Dues List
+            </div>
+            <div class="nav-item" onclick="switchTab('expenses')">
+                <i class="fas fa-receipt w-5"></i> Expenses
+            </div>
+            <div class="nav-item" onclick="switchTab('staff')">
+                <i class="fas fa-users-cog w-5"></i> Staff Management
+            </div>
+            <div class="nav-item" onclick="switchTab('profit-loss')">
+                <i class="fas fa-file-invoice-dollar w-5"></i> Profit & Loss
+            </div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h1 id="page-title" class="text-base font-bold text-gray-800 uppercase">Dashboard</h1>
+            <div class="flex items-center gap-3">
+                <span class="text-gray-500 text-[10px]" id="current-date-header"></span>
+                <div class="h-6 w-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-[10px]">
+                    <i class="fas fa-user-md"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="scroll-area" id="content-body">
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content">
+                <div class="card mb-3 py-2 px-3 flex flex-wrap gap-4 items-center bg-white border border-indigo-50">
+                    <span class="text-[9px] font-bold text-gray-500 uppercase">Stats Period:</span>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[9px] text-gray-400 uppercase">From</label>
+                        <input type="date" id="dash-date-from" class="border rounded px-2 py-0.5 text-[10px]" onchange="updateDashboardStats()">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[9px] text-gray-400 uppercase">To</label>
+                        <input type="date" id="dash-date-to" class="border rounded px-2 py-0.5 text-[10px]" onchange="updateDashboardStats()">
+                    </div>
+                    <button onclick="setDashboardPeriod('today')" class="text-[9px] font-bold text-indigo-600 uppercase hover:underline">Today</button>
+                    <button onclick="setDashboardPeriod('month')" class="text-[9px] font-bold text-indigo-600 uppercase hover:underline">This Month</button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                    <div class="card border-l-4 border-indigo-500 py-2">
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Total Patients</p>
+                        <h2 class="text-lg font-black" id="stat-total-patients">0</h2>
+                    </div>
+                    <div class="card border-l-4 border-green-500 py-2">
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Today's Revenue</p>
+                        <h2 class="text-lg font-black" id="stat-revenue">₹0</h2>
+                    </div>
+                    <div class="card border-l-4 border-red-500 py-2">
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Dues Outstanding</p>
+                        <h2 class="text-lg font-black text-red-600" id="stat-pending">₹0</h2>
+                    </div>
+                    <div class="card border-l-4 border-purple-500 py-2">
+                        <p class="text-[9px] text-gray-400 font-bold uppercase">Period total Revenue</p>
+                        <h2 class="text-lg font-black" id="stat-period-revenue">₹0</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="card min-h-[200px]">
+                        <h3 class="text-xs font-bold text-gray-700 mb-2 uppercase">Visits in Period</h3>
+                        <div class="table-container max-h-[300px] overflow-y-auto">
+                            <table id="today-appointments-table">
+                                <thead><tr><th>Date</th><th>Patient</th><th>Reason</th><th class="text-right">Action</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card min-h-[200px]">
+                        <h3 class="text-xs font-bold text-gray-700 mb-2 uppercase">Recent Payments</h3>
+                        <div class="table-container max-h-[300px] overflow-y-auto">
+                            <table id="recent-payments-table">
+                                <thead><tr><th>Date</th><th>Patient</th><th>Amount</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Tab -->
+            <div id="booking-tab" class="tab-content hidden">
+                <div class="max-w-xl mx-auto">
+                    <div class="card">
+                        <h2 class="text-xs font-bold mb-3 border-b pb-1 uppercase">Direct Booking</h2>
+                        <form id="booking-form" onsubmit="handleBooking(event)">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-[9px] font-bold text-gray-400 uppercase">Contact Number</label>
+                                    <input type="text" id="book-contact" placeholder="Phone Number" required class="w-full border rounded p-1.5" onkeyup="checkPatientExists(this.value)">
+                                </div>
+                                <div id="patient-details-group">
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div>
+                                            <label class="text-[9px] font-bold text-gray-400 uppercase">First Name</label>
+                                            <input type="text" id="book-fname" placeholder="First Name" class="w-full border rounded p-1.5">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-gray-400 uppercase">Last Name</label>
+                                            <input type="text" id="book-lname" placeholder="Last Name" class="w-full border rounded p-1.5">
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 mb-2">
+                                        <div>
+                                            <label class="text-[9px] font-bold text-gray-400 uppercase">Age</label>
+                                            <input type="number" id="book-age" placeholder="Age" class="w-full border rounded p-1.5">
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-gray-400 uppercase">Gender</label>
+                                            <select id="book-gender" class="w-full border rounded p-1.5"><option>Male</option><option>Female</option></select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="text-[9px] font-bold text-gray-400 uppercase">Medical History</label>
+                                        <textarea id="book-med-history" placeholder="Diabetes, Hypertension, Allergies, etc." class="w-full border rounded p-1.5 h-16"></textarea>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-[9px] font-bold text-gray-400 uppercase">Date</label>
+                                        <input type="date" id="visit-date" required class="w-full border rounded p-1.5">
+                                    </div>
+                                    <div>
+                                        <label class="text-[9px] font-bold text-gray-400 uppercase">Reason</label>
+                                        <input type="text" id="visit-reason" placeholder="Scaling, Extraction..." class="w-full border rounded p-1.5">
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center text-xs font-bold">
+                                    <span id="patient-status-msg" class="text-gray-400 italic">Check contact...</span>
+                                </div>
+                                <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-bold uppercase text-xs">Confirm Booking</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients Tab -->
+            <div id="patients-tab" class="tab-content hidden">
+                <div class="card mb-3 py-2 px-3 flex gap-3 items-center">
+                    <i class="fas fa-search text-gray-400 text-xs"></i>
+                    <input type="text" id="patient-search" class="flex-1" placeholder="Search Patient..." onkeyup="renderPatients()">
+                </div>
+                <div class="card p-0">
+                    <div class="table-container border-0">
+                        <table id="patients-table">
+                            <thead><tr><th>MRN</th><th>Name</th><th>Gender/Age</th><th>Last Visit</th><th>Action</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dues Tab -->
+            <div id="dues-tab" class="tab-content hidden">
+                <div class="card mb-3 py-2 px-3 flex justify-between items-center bg-red-50 border-red-100 border">
+                    <span class="text-[10px] font-bold text-red-700 uppercase">Consolidated Dues Summary</span>
+                    <span id="total-dues-sum" class="text-xs font-black text-red-800">Total: ₹0</span>
+                </div>
+                <div class="card p-0">
+                    <div class="table-container border-0">
+                        <table id="dues-list-table">
+                            <thead><tr><th>Patient MRN</th><th>Name</th><th>Contact</th><th>Outstanding Balance</th><th class="text-right">Action</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="expenses-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div class="card md:col-span-1 h-fit">
+                        <h3 class="text-[10px] font-bold uppercase mb-2">New Expense</h3>
+                        <form onsubmit="handleExpense(event)" class="space-y-2">
+                            <div>
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Category</label>
+                                <select id="exp-category" class="w-full border rounded p-1.5" onchange="toggleOtherExpenseReason(this.value)">
+                                    <option>Rent</option>
+                                    <option>Salary</option>
+                                    <option>Supplies</option>
+                                    <option>Lab</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div id="exp-other-reason-container" class="hidden">
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Specify Reason</label>
+                                <input type="text" id="exp-other-reason" placeholder="What was this for?" class="w-full border rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Date</label>
+                                <input type="date" id="exp-date" required class="w-full border rounded p-1.5">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Amount ₹</label>
+                                <input type="number" id="exp-amount" placeholder="Amount ₹" required class="w-full border rounded p-1.5">
+                            </div>
+                            <button class="w-full bg-red-500 text-white py-1.5 rounded font-bold text-[10px] uppercase mt-2">Add Expense</button>
+                        </form>
+                    </div>
+                    <div class="card md:col-span-3 p-0">
+                        <div class="table-container border-0">
+                            <table id="expenses-table">
+                                <thead><tr><th>Date</th><th>Category</th><th>Amount</th><th>Action</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Management Tab -->
+            <div id="staff-tab" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="lg:col-span-1 space-y-4">
+                        <div class="card">
+                            <h3 class="text-[10px] font-bold uppercase mb-3">Add New Staff</h3>
+                            <form onsubmit="handleStaff(event)" class="space-y-3">
+                                <div>
+                                    <label class="text-[9px] font-bold text-gray-400 uppercase">Full Name</label>
+                                    <input type="text" id="staff-name" placeholder="Staff Member Name" required class="w-full border rounded p-1.5">
+                                </div>
+                                <div>
+                                    <label class="text-[9px] font-bold text-gray-400 uppercase">Monthly Salary ₹</label>
+                                    <input type="number" id="staff-salary" placeholder="e.g. 15000" required class="w-full border rounded p-1.5">
+                                </div>
+                                <button class="w-full bg-indigo-600 text-white py-2 rounded font-bold text-[10px] uppercase">Register Staff</button>
+                            </form>
+                        </div>
+                        <div class="card p-0 overflow-hidden">
+                            <h3 class="text-[10px] font-bold uppercase p-3 bg-gray-50 border-b">Active Staff List</h3>
+                            <div class="table-container border-0 max-h-[400px] overflow-y-auto">
+                                <table id="staff-list-table">
+                                    <thead><tr><th>Name</th><th>Fixed</th><th>Action</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-4">
+                        <div id="staff-details-panel" class="hidden">
+                            <div class="card bg-indigo-50 border-indigo-100 border flex justify-between items-center mb-4">
+                                <div>
+                                    <h2 id="current-staff-name" class="text-base font-black text-indigo-900">Select a member</h2>
+                                    <p id="current-staff-salary" class="text-[10px] font-bold text-indigo-600 uppercase">Salary: ₹0/mo</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-[9px] font-bold text-gray-500 uppercase">Month: <span id="current-month-display"></span></p>
+                                    <h3 id="pending-salary-display" class="text-lg font-black text-red-600">Pending: ₹0</h3>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="card">
+                                    <h4 class="text-[10px] font-bold uppercase mb-3 text-gray-500">Add Salary/Advance Record</h4>
+                                    <form onsubmit="handleSalaryAction(event)" class="space-y-2">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="text-[9px] font-bold text-gray-400 uppercase">Type</label>
+                                                <select id="staff-action-type" class="w-full border rounded p-1.5">
+                                                    <option value="advance">Advance Taken</option>
+                                                    <option value="deduction">Fine/Deduction</option>
+                                                    <option value="payment">Salary Paid</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="text-[9px] font-bold text-gray-400 uppercase">Date</label>
+                                                <input type="date" id="staff-action-date" required class="w-full border rounded p-1.5">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="text-[9px] font-bold text-gray-400 uppercase">Amount ₹</label>
+                                            <input type="number" id="staff-action-amount" placeholder="Amount" required class="w-full border rounded p-1.5">
+                                        </div>
+                                        <button class="w-full bg-green-600 text-white py-2 rounded font-bold text-[10px] uppercase">Record Entry</button>
+                                    </form>
+                                </div>
+
+                                <div class="card">
+                                    <h4 class="text-[10px] font-bold uppercase mb-3 text-gray-500">Record Leave</h4>
+                                    <form onsubmit="handleLeaveAction(event)" class="space-y-2">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="text-[9px] font-bold text-gray-400 uppercase">Date</label>
+                                                <input type="date" id="leave-date" required class="w-full border rounded p-1.5">
+                                            </div>
+                                            <div>
+                                                <label class="text-[9px] font-bold text-gray-400 uppercase">Status</label>
+                                                <select id="leave-status" class="w-full border rounded p-1.5">
+                                                    <option value="Paid Leave">Paid Leave</option>
+                                                    <option value="Unpaid Leave">Unpaid Leave</option>
+                                                    <option value="Absent">Absent</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="w-full bg-red-400 text-white py-2 rounded font-bold text-[10px] uppercase">Save Leave</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                <div class="card p-0 overflow-hidden">
+                                    <h4 class="text-[10px] font-bold uppercase p-2 bg-gray-50 border-b">Finance Ledger (Current Month)</h4>
+                                    <div class="table-container border-0 max-h-[300px] overflow-y-auto">
+                                        <table id="staff-ledger-table">
+                                            <thead><tr><th>Date</th><th>Type</th><th>Amt</th></tr></thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card p-0 overflow-hidden">
+                                    <h4 class="text-[10px] font-bold uppercase p-2 bg-gray-50 border-b">Attendance (Current Month)</h4>
+                                    <div class="table-container border-0 max-h-[300px] overflow-y-auto">
+                                        <table id="staff-attendance-table">
+                                            <thead><tr><th>Date</th><th>Status</th></tr></thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="staff-empty-state" class="card h-64 flex flex-col items-center justify-center text-gray-400 border-dashed border-2">
+                            <i class="fas fa-id-badge text-4xl mb-3 opacity-20"></i>
+                            <p class="font-bold text-xs">Select a staff member to manage salary & leaves</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profit & Loss Tab -->
+            <div id="profit-loss-tab" class="tab-content hidden">
+                <div class="card mb-3 py-2 px-3 flex flex-wrap gap-4 items-center bg-white border border-indigo-50">
+                    <span class="text-[9px] font-bold text-gray-500 uppercase">Filter Period:</span>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[9px] text-gray-400 uppercase">From</label>
+                        <input type="date" id="pl-date-from" class="border rounded px-2 py-0.5 text-[10px]" onchange="renderProfitLoss()">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-[9px] text-gray-400 uppercase">To</label>
+                        <input type="date" id="pl-date-to" class="border rounded px-2 py-0.5 text-[10px]" onchange="renderProfitLoss()">
+                    </div>
+                    <button onclick="setPLPeriod('today')" class="text-[9px] font-bold text-indigo-600 uppercase hover:underline">Today</button>
+                    <button onclick="setPLPeriod('month')" class="text-[9px] font-bold text-indigo-600 uppercase hover:underline">This Month</button>
+                    <button onclick="setPLPeriod('all')" class="text-[9px] font-bold text-indigo-600 uppercase hover:underline">All Time</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="card bg-green-50 border border-green-100 p-3">
+                        <p class="text-[9px] uppercase font-bold text-green-700">Income (Payments Received)</p>
+                        <h2 class="text-lg font-black" id="pl-income">₹0</h2>
+                    </div>
+                    <div class="card bg-red-50 border border-red-100 p-3">
+                        <p class="text-[9px] uppercase font-bold text-red-700">Expenses (All categories)</p>
+                        <h2 class="text-lg font-black" id="pl-expenses">₹0</h2>
+                    </div>
+                    <div class="card bg-indigo-50 border border-indigo-200 p-3">
+                        <p class="text-[9px] uppercase font-bold text-indigo-700">Net Profit</p>
+                        <h2 class="text-lg font-black" id="pl-net">₹0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div id="profile-tab" class="tab-content hidden">
+                <button onclick="switchTab('patients')" class="mb-2 text-indigo-600 text-[10px] font-bold uppercase flex items-center gap-1"><i class="fas fa-arrow-left"></i> Back</button>
+                <div id="profile-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let patients = JSON.parse(localStorage.getItem('wdc_patients')) || [];
+        let appointments = JSON.parse(localStorage.getItem('wdc_appointments')) || [];
+        let payments = JSON.parse(localStorage.getItem('wdc_payments')) || [];
+        let expenses = JSON.parse(localStorage.getItem('wdc_expenses')) || [];
+        let staffMembers = JSON.parse(localStorage.getItem('wdc_staff')) || [];
+        let staffActions = JSON.parse(localStorage.getItem('wdc_staff_actions')) || [];
+
+        let currentActiveStaffId = null;
+
+        const getTodayDate = () => new Date().toISOString().split('T')[0];
+
+        const saveData = () => {
+            localStorage.setItem('wdc_patients', JSON.stringify(patients));
+            localStorage.setItem('wdc_appointments', JSON.stringify(appointments));
+            localStorage.setItem('wdc_payments', JSON.stringify(payments));
+            localStorage.setItem('wdc_expenses', JSON.stringify(expenses));
+            localStorage.setItem('wdc_staff', JSON.stringify(staffMembers));
+            localStorage.setItem('wdc_staff_actions', JSON.stringify(staffActions));
+            updateDashboardStats();
+        };
+
+        const getPatientSummary = (pId) => {
+            const appts = appointments.filter(a => a.patient_id === pId);
+            const pays = payments.filter(p => p.patient_id === pId);
+            const totalFees = appts.reduce((sum, a) => sum + (parseFloat(a.cost) || 0), 0);
+            const totalPaid = pays.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+            return { totalFees, totalPaid, pending: totalFees - totalPaid };
+        };
+
+        const handleBooking = (e) => {
+            e.preventDefault();
+            const contact = document.getElementById('book-contact').value;
+            let p = patients.find(x => x.contact === contact);
+            
+            const pData = {
+                fname: document.getElementById('book-fname').value,
+                lname: document.getElementById('book-lname').value,
+                age: document.getElementById('book-age').value,
+                gender: document.getElementById('book-gender').value,
+                medHistory: document.getElementById('book-med-history').value,
+                contact: contact
+            };
+
+            if (!p) {
+                p = { id: Date.now(), mrn: `WDC-${(patients.length+1).toString().padStart(4,'0')}`, ...pData };
+                patients.push(p);
+            } else {
+                Object.assign(p, pData);
+            }
+            
+            appointments.push({
+                id: Date.now()+1, patient_id: p.id, date: document.getElementById('visit-date').value,
+                reason: document.getElementById('visit-reason').value, medications: "", cost: 0, notes: ""
+            });
+            saveData(); e.target.reset(); 
+            // Reset date after form clear
+            document.getElementById('visit-date').value = getTodayDate();
+            switchTab('dashboard');
+        };
+
+        const viewProfile = (pId) => {
+            const p = patients.find(x => x.id === pId);
+            const hist = appointments.filter(a => a.patient_id === pId).sort((a,b) => b.date.localeCompare(a.date));
+            const payHist = payments.filter(pay => pay.patient_id === pId).sort((a,b) => b.date.localeCompare(a.date));
+            const summary = getPatientSummary(pId);
+
+            const html = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="space-y-3">
+                        <div class="card p-0 overflow-hidden border border-indigo-100">
+                            <div class="bg-indigo-600 p-3 text-white">
+                                <h2 class="text-lg font-bold leading-tight">${p.fname} ${p.lname}</h2>
+                                <p class="text-[10px] font-medium opacity-90">${p.mrn} | ${p.contact}</p>
+                            </div>
+                            <div class="p-3 bg-indigo-50 border-b border-indigo-100">
+                                <p class="text-[9px] font-bold text-indigo-700 uppercase tracking-wider mb-2">Financial Summary</p>
+                                <div class="grid grid-cols-1 gap-1">
+                                    <div class="flex justify-between text-[10px]"><span>Total Fees:</span><span class="font-bold">₹${summary.totalFees}</span></div>
+                                    <div class="flex justify-between text-[10px] text-green-600"><span>Amount Received:</span><span class="font-bold">₹${summary.totalPaid}</span></div>
+                                    <div class="flex justify-between text-xs pt-1 border-t border-indigo-200 text-red-600 font-black"><span>Outstanding:</span><span>₹${summary.pending}</span></div>
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                <div class="mb-2">
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">Age/Sex</p>
+                                    <p class="text-[11px] text-gray-700 font-medium">${p.age}/${p.gender}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase">Medical History</p>
+                                    <p class="text-[11px] text-red-700 font-bold italic">${p.medHistory || 'None Recorded'}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3 class="text-[10px] font-bold uppercase text-gray-500 mb-2">Add Payment</h3>
+                            <div class="space-y-2">
+                                <input type="date" id="new-pay-date" class="w-full border rounded p-1.5" value="${getTodayDate()}">
+                                <input type="number" id="new-pay-amt" class="w-full border rounded p-1.5" placeholder="Amount ₹">
+                                <input type="text" id="new-pay-note" class="w-full border rounded p-1.5" placeholder="Note (Optional)">
+                                <button onclick="addPayment(${pId})" class="w-full bg-green-600 text-white py-2 rounded font-bold uppercase text-[9px]">Log Payment</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-2 space-y-3">
+                        <div class="flex border-b">
+                            <button onclick="toggleProfileSubTab('history')" class="profile-tab-btn active" id="btn-tab-history">Visit History</button>
+                            <button onclick="toggleProfileSubTab('billing')" class="profile-tab-btn" id="btn-tab-billing">Financial Ledger</button>
+                            <button onclick="resetVisitForm(${pId}); toggleProfileSubTab('new');" class="profile-tab-btn" id="btn-tab-new">New Clinical Entry</button>
+                        </div>
+                        
+                        <div id="prof-sub-history" class="card p-0 overflow-hidden">
+                            <div class="table-container border-0">
+                                <table>
+                                    <thead><tr><th>Date</th><th>Procedure & Notes</th><th>Sitting Fee</th><th class="text-right">Action</th></tr></thead>
+                                    <tbody>
+                                        ${hist.length ? hist.map(a => `
+                                            <tr>
+                                                <td class="whitespace-nowrap">${a.date}</td>
+                                                <td><div class="font-bold text-[11px]">${a.reason}</div><div class="text-[9px] text-gray-400">${a.notes || ''}</div></td>
+                                                <td class="font-bold">₹${a.cost || 0}</td>
+                                                <td class="text-right"><button onclick="editAppointment(${a.id})" class="text-indigo-600"><i class="fas fa-edit"></i></button></td>
+                                            </tr>
+                                        `).join('') : '<tr><td colspan="4" class="text-center p-6 text-gray-400">No visits recorded.</td></tr>'}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="prof-sub-billing" class="card p-0 overflow-hidden hidden">
+                            <div class="table-container border-0">
+                                <table>
+                                    <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Debit (Fee)</th><th>Credit (Paid)</th></tr></thead>
+                                    <tbody>
+                                        ${[...hist.map(a=>({...a, type:'fee'})), ...payHist.map(p=>({...p, type:'pay'}))].sort((a,b)=>b.date.localeCompare(a.date)).map(item => `
+                                            <tr class="${item.type === 'pay' ? 'bg-green-50' : ''}">
+                                                <td>${item.date}</td>
+                                                <td class="text-[9px] font-bold uppercase">${item.type === 'pay' ? 'Payment' : 'Charge'}</td>
+                                                <td class="text-[10px]">${item.type === 'pay' ? (item.note || 'Manual Payment') : item.reason}</td>
+                                                <td class="text-red-600 font-bold">${item.type === 'fee' ? '₹'+item.cost : '-'}</td>
+                                                <td class="text-green-600 font-bold">${item.type === 'pay' ? '₹'+item.amount : '-'}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="prof-sub-new" class="card hidden">
+                            <div class="grid grid-cols-2 gap-3 mb-2">
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">Visit Date</label><input type="date" id="prof-date" class="w-full border rounded p-1.5" value="${getTodayDate()}"></div>
+                                <div><label class="text-[9px] font-bold text-gray-400 uppercase">Procedure</label><input type="text" id="prof-reason" class="w-full border rounded p-1.5" placeholder="Sitting 1, Extraction etc."></div>
+                            </div>
+                            <div class="mb-2"><label class="text-[9px] font-bold text-gray-400 uppercase">Clinical Notes</label><textarea id="prof-notes" rows="2" class="w-full border rounded p-1.5" placeholder="Work performed today..."></textarea></div>
+                            <div class="mb-2"><label class="text-[9px] font-bold text-gray-400 uppercase">Prescription</label><input type="text" id="prof-meds" class="w-full border rounded p-1.5" placeholder="Medicine list"></div>
+                            <div class="mb-4">
+                                <label class="text-[9px] font-bold text-gray-400 uppercase">Fee for this visit ₹</label>
+                                <input type="number" id="prof-cost" class="w-full border rounded p-1.5" placeholder="0">
+                            </div>
+                            <button onclick="handleProfileVisit(${p.id})" class="w-full bg-indigo-600 text-white py-2 rounded font-bold uppercase text-[10px]">Save Clinical Entry</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('profile-container').innerHTML = html;
+            switchTab('profile');
+        };
+
+        const addPayment = (pId) => {
+            const amount = parseFloat(document.getElementById('new-pay-amt').value);
+            const date = document.getElementById('new-pay-date').value;
+            const note = document.getElementById('new-pay-note').value;
+            if (!amount || amount <= 0) return;
+            payments.push({ id: Date.now(), patient_id: pId, amount, date, note });
+            saveData();
+            viewProfile(pId);
+        };
+
+        const handleProfileVisit = (pId, aId = null) => {
+            const data = {
+                id: aId || Date.now(),
+                patient_id: pId,
+                date: document.getElementById('prof-date').value,
+                reason: document.getElementById('prof-reason').value,
+                medications: document.getElementById('prof-meds').value,
+                notes: document.getElementById('prof-notes').value,
+                cost: parseFloat(document.getElementById('prof-cost').value) || 0
+            };
+            if (aId) {
+                const idx = appointments.findIndex(a => a.id === aId);
+                if (idx !== -1) appointments[idx] = data;
+            } else {
+                appointments.push(data);
+            }
+            saveData();
+            viewProfile(pId);
+        };
+
+        const editAppointment = (aId) => {
+            const a = appointments.find(x => x.id === aId);
+            if (!a) return;
+            toggleProfileSubTab('new');
+            document.getElementById('prof-date').value = a.date;
+            document.getElementById('prof-reason').value = a.reason;
+            document.getElementById('prof-notes').value = a.notes || '';
+            document.getElementById('prof-meds').value = a.medications || '';
+            document.getElementById('prof-cost').value = a.cost || 0;
+            const btn = document.querySelector('#prof-sub-new button');
+            btn.onclick = () => handleProfileVisit(a.patient_id, a.id);
+            btn.innerText = "Update Clinical Entry";
+        };
+
+        const resetVisitForm = (pId) => {
+            document.getElementById('prof-date').value = getTodayDate();
+            document.getElementById('prof-reason').value = '';
+            document.getElementById('prof-notes').value = '';
+            document.getElementById('prof-meds').value = '';
+            document.getElementById('prof-cost').value = '';
+            const btn = document.querySelector('#prof-sub-new button');
+            btn.onclick = () => handleProfileVisit(pId);
+            btn.innerText = "Save Clinical Entry";
+        };
+
+        const toggleProfileSubTab = (tab) => {
+            ['history', 'billing', 'new'].forEach(t => {
+                document.getElementById('prof-sub-' + t).classList.toggle('hidden', t !== tab);
+                document.getElementById('btn-tab-' + t).classList.toggle('active', t === tab);
+            });
+        };
+
+        const switchTab = (id) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if(id !== 'profile') {
+                const tabEl = document.getElementById(`${id}-tab`);
+                if (tabEl) tabEl.classList.remove('hidden');
+                document.getElementById('page-title').innerText = id.replace('-',' ');
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    if (nav.getAttribute('onclick')?.includes(`'${id}'`)) nav.classList.add('active');
+                });
+            } else {
+                document.getElementById('profile-tab').classList.remove('hidden');
+                document.getElementById('page-title').innerText = "Patient Profile";
+            }
+            if (id === 'patients') renderPatients();
+            if (id === 'dashboard') updateDashboardStats();
+            if (id === 'expenses') renderExpenses();
+            if (id === 'profit-loss') renderProfitLoss();
+            if (id === 'dues') renderDuesList();
+            if (id === 'staff') renderStaffList();
+        };
+
+        const renderDuesList = () => {
+            const tableBody = document.querySelector('#dues-list-table tbody');
+            tableBody.innerHTML = '';
+            let grandTotal = 0;
+            patients.forEach(p => {
+                const summary = getPatientSummary(p.id);
+                if (summary.pending > 0) {
+                    grandTotal += summary.pending;
+                    tableBody.innerHTML += `<tr><td>${p.mrn}</td><td class="font-bold">${p.fname} ${p.lname}</td><td>${p.contact}</td><td class="text-red-600 font-black">₹${summary.pending}</td><td class="text-right"><button onclick="viewProfile(${p.id})" class="text-indigo-600 font-bold uppercase text-[9px]">Manage</button></td></tr>`;
+                }
+            });
+            document.getElementById('total-dues-sum').innerText = `Total Outstanding: ₹${grandTotal}`;
+        };
+
+        const updateDashboardStats = () => {
+            const fromDate = document.getElementById('dash-date-from').value;
+            const toDate = document.getElementById('dash-date-to').value;
+            const todayStr = getTodayDate();
+            
+            const filteredAppts = appointments.filter(a => !fromDate || !toDate || (a.date >= fromDate && a.date <= toDate));
+            const filteredPays = payments.filter(p => !fromDate || !toDate || (p.date >= fromDate && p.date <= toDate));
+            const todayPays = payments.filter(p => p.date === todayStr);
+
+            let totalPending = 0;
+            patients.forEach(p => totalPending += getPatientSummary(p.id).pending);
+
+            document.getElementById('stat-total-patients').innerText = new Set(filteredAppts.map(a => a.patient_id)).size;
+            document.getElementById('stat-revenue').innerText = `₹${todayPays.reduce((s,p)=>s+p.amount,0)}`;
+            document.getElementById('stat-pending').innerText = `₹${totalPending}`;
+            document.getElementById('stat-period-revenue').innerText = `₹${filteredPays.reduce((s,p)=>s+p.amount,0)}`;
+            
+            const periodT = document.querySelector('#today-appointments-table tbody'); 
+            periodT.innerHTML = filteredAppts.sort((a,b)=>b.date.localeCompare(a.date)).slice(0, 10).map(a => {
+                const p = patients.find(x => x.id === a.patient_id);
+                return `<tr><td>${a.date}</td><td>${p?.fname || 'Unknown'}</td><td>${a.reason}</td><td class="text-right"><button onclick="viewProfile(${a.patient_id})"><i class="fas fa-eye text-gray-400"></i></button></td></tr>`;
+            }).join('');
+
+            const paysT = document.querySelector('#recent-payments-table tbody');
+            paysT.innerHTML = filteredPays.sort((a,b)=>b.date.localeCompare(a.date)).slice(0, 10).map(pay => {
+                const p = patients.find(x => x.id === pay.patient_id);
+                return `<tr><td>${pay.date}</td><td>${p?.fname || 'Unknown'}</td><td class="text-green-600 font-bold">₹${pay.amount}</td></tr>`;
+            }).join('');
+        };
+
+        const renderPatients = () => {
+            const s = document.getElementById('patient-search').value.toLowerCase();
+            const t = document.querySelector('#patients-table tbody'); t.innerHTML = '';
+            patients.filter(p => p.fname.toLowerCase().includes(s) || p.contact.includes(s) || p.mrn.toLowerCase().includes(s)).forEach(p => {
+                const last = appointments.filter(a => a.patient_id === p.id).sort((a,b)=>b.date.localeCompare(a.date))[0]?.date || '-';
+                t.innerHTML += `<tr><td>${p.mrn}</td><td class="font-bold">${p.fname} ${p.lname}</td><td>${p.gender[0]}/${p.age}</td><td>${last}</td><td><button onclick="viewProfile(${p.id})" class="text-indigo-600 font-bold uppercase text-[9px]">Profile</button></td></tr>`;
+            });
+        };
+
+        const toggleOtherExpenseReason = (val) => {
+            const container = document.getElementById('exp-other-reason-container');
+            container.classList.toggle('hidden', val !== 'Other');
+        };
+
+        const handleExpense = (e) => {
+            e.preventDefault();
+            const categorySelect = document.getElementById('exp-category').value;
+            const otherReason = document.getElementById('exp-other-reason').value;
+            const finalCategory = (categorySelect === 'Other') ? `Other: ${otherReason}` : categorySelect;
+            
+            expenses.push({ 
+                id: Date.now(), 
+                category: finalCategory, 
+                date: document.getElementById('exp-date').value, 
+                amount: parseFloat(document.getElementById('exp-amount').value) || 0 
+            });
+            
+            saveData(); 
+            renderExpenses(); 
+            e.target.reset();
+            document.getElementById('exp-date').value = getTodayDate();
+            document.getElementById('exp-other-reason-container').classList.add('hidden');
+        };
+
+        const deleteExpense = (id) => {
+            if(!confirm('Delete this expense?')) return;
+            expenses = expenses.filter(e => e.id !== id);
+            saveData();
+            renderExpenses();
+            if(document.getElementById('profit-loss-tab').classList.contains('hidden') === false) renderProfitLoss();
+        };
+
+        const renderExpenses = () => {
+            const t = document.querySelector('#expenses-table tbody'); 
+            t.innerHTML = [...expenses].sort((a,b) => b.date.localeCompare(a.date)).map(e => `
+                <tr>
+                    <td>${e.date}</td>
+                    <td class="font-medium">${e.category}</td>
+                    <td class="font-bold text-red-600">₹${e.amount}</td>
+                    <td><button onclick="deleteExpense(${e.id})" class="text-gray-400 hover:text-red-500"><i class="fas fa-trash-alt"></i></button></td>
+                </tr>
+            `).join('');
+        };
+
+        const setPLPeriod = (period) => {
+            const today = getTodayDate();
+            if (period === 'today') {
+                document.getElementById('pl-date-from').value = today;
+                document.getElementById('pl-date-to').value = today;
+            } else if (period === 'month') {
+                document.getElementById('pl-date-from').value = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+                document.getElementById('pl-date-to').value = today;
+            } else if (period === 'all') {
+                document.getElementById('pl-date-from').value = '';
+                document.getElementById('pl-date-to').value = '';
+            }
+            renderProfitLoss();
+        };
+
+        const renderProfitLoss = () => {
+            const fromDate = document.getElementById('pl-date-from').value;
+            const toDate = document.getElementById('pl-date-to').value;
+
+            // Income calculation
+            const filteredPays = payments.filter(p => (!fromDate || p.date >= fromDate) && (!toDate || p.date <= toDate));
+            const totalInc = filteredPays.reduce((s,p) => s + (parseFloat(p.amount) || 0), 0);
+            
+            // Expense calculation - EXPLICITLY capture every single expense object
+            // Removed any logic that might look for specific strings to ensure 'Other' is always captured
+            const filteredExps = expenses.filter(e => (!fromDate || e.date >= fromDate) && (!toDate || e.date <= toDate));
+            const totalExp = filteredExps.reduce((s,x) => s + (parseFloat(x.amount) || 0), 0);
+
+            document.getElementById('pl-income').innerText = `₹${totalInc.toLocaleString()}`;
+            document.getElementById('pl-expenses').innerText = `₹${totalExp.toLocaleString()}`;
+            document.getElementById('pl-net').innerText = `₹${(totalInc - totalExp).toLocaleString()}`;
+            
+            const netEl = document.getElementById('pl-net');
+            if (totalInc - totalExp < 0) {
+                netEl.classList.add('text-red-600');
+                netEl.classList.remove('text-indigo-700');
+            } else {
+                netEl.classList.add('text-indigo-700');
+                netEl.classList.remove('text-red-600');
+            }
+        };
+
+        const checkPatientExists = (c) => {
+            const msg = document.getElementById('patient-status-msg');
+            const f = patients.find(x => x.contact === c);
+            if(f) { 
+                msg.innerText = `Matched: ${f.fname}`; 
+                document.getElementById('book-fname').value = f.fname;
+                document.getElementById('book-lname').value = f.lname;
+                document.getElementById('book-age').value = f.age;
+                document.getElementById('book-gender').value = f.gender;
+                document.getElementById('book-med-history').value = f.medHistory || '';
+            } else { msg.innerText = "New Patient Record"; }
+        };
+
+        const handleStaff = (e) => {
+            e.preventDefault();
+            staffMembers.push({ id: Date.now(), name: document.getElementById('staff-name').value, salary: parseFloat(document.getElementById('staff-salary').value) || 0 });
+            saveData(); renderStaffList(); e.target.reset();
+        };
+
+        const renderStaffList = () => {
+            const tbody = document.querySelector('#staff-list-table tbody');
+            tbody.innerHTML = staffMembers.map(s => `
+                <tr class="cursor-pointer hover:bg-indigo-50 ${currentActiveStaffId === s.id ? 'bg-indigo-100' : ''}" onclick="selectStaff(${s.id})">
+                    <td class="font-bold">${s.name}</td>
+                    <td class="text-indigo-600">₹${s.salary}</td>
+                    <td><button onclick="event.stopPropagation(); deleteStaff(${s.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        };
+
+        const deleteStaff = (id) => {
+            if(!confirm('Delete this staff member?')) return;
+            staffMembers = staffMembers.filter(s => s.id !== id);
+            staffActions = staffActions.filter(a => a.staff_id !== id);
+            if (currentActiveStaffId === id) { 
+                currentActiveStaffId = null; 
+                document.getElementById('staff-details-panel').classList.add('hidden'); 
+                document.getElementById('staff-empty-state').classList.remove('hidden'); 
+            }
+            saveData(); renderStaffList();
+        };
+
+        const selectStaff = (id) => {
+            currentActiveStaffId = id;
+            const s = staffMembers.find(x => x.id === id);
+            document.getElementById('staff-details-panel').classList.remove('hidden');
+            document.getElementById('staff-empty-state').classList.add('hidden');
+            document.getElementById('current-staff-name').innerText = s.name;
+            document.getElementById('current-staff-salary').innerText = `Fixed Salary: ₹${s.salary}/mo`;
+            document.getElementById('staff-action-date').value = getTodayDate();
+            document.getElementById('leave-date').value = getTodayDate();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('current-month-display').innerText = monthNames[new Date().getMonth()] + " " + new Date().getFullYear();
+            renderStaffRecords(); renderStaffList();
+        };
+
+        const handleSalaryAction = (e) => {
+            e.preventDefault();
+            if(!currentActiveStaffId) return;
+            staffActions.push({ id: Date.now(), staff_id: currentActiveStaffId, type: document.getElementById('staff-action-type').value, date: document.getElementById('staff-action-date').value, amount: parseFloat(document.getElementById('staff-action-amount').value) || 0, entry_type: 'finance' });
+            saveData(); renderStaffRecords(); 
+            e.target.reset(); 
+            document.getElementById('staff-action-date').value = getTodayDate();
+        };
+
+        const handleLeaveAction = (e) => {
+            e.preventDefault();
+            if(!currentActiveStaffId) return;
+            staffActions.push({ id: Date.now(), staff_id: currentActiveStaffId, status: document.getElementById('leave-status').value, date: document.getElementById('leave-date').value, entry_type: 'leave' });
+            saveData(); renderStaffRecords();
+            document.getElementById('leave-date').value = getTodayDate();
+        };
+
+        const renderStaffRecords = () => {
+            const staff = staffMembers.find(x => x.id === currentActiveStaffId);
+            const now = new Date();
+            const records = staffActions.filter(a => {
+                const d = new Date(a.date);
+                return a.staff_id === currentActiveStaffId && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            });
+            const finRecords = records.filter(r => r.entry_type === 'finance');
+            document.querySelector('#staff-ledger-table tbody').innerHTML = finRecords.sort((a,b) => b.date.localeCompare(a.date)).map(r => `<tr><td>${r.date.split('-').slice(1).join('/')}</td><td class="text-[9px] font-bold uppercase">${r.type}</td><td class="${r.type === 'payment' ? 'text-green-600' : 'text-red-600'} font-bold">₹${r.amount}</td></tr>`).join('');
+            document.querySelector('#staff-attendance-table tbody').innerHTML = records.filter(r => r.entry_type === 'leave').sort((a,b) => b.date.localeCompare(a.date)).map(r => `<tr><td>${r.date}</td><td><span class="badge ${r.status === 'Paid Leave' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${r.status}</span></td></tr>`).join('');
+            const pending = staff.salary - finRecords.filter(r => r.type === 'advance' || r.type === 'deduction' || r.type === 'payment').reduce((s, r) => s + r.amount, 0);
+            document.getElementById('pending-salary-display').innerText = `Pending: ₹${pending}`;
+        };
+
+        const setDashboardPeriod = (period) => {
+            const today = getTodayDate();
+            if (period === 'today') { document.getElementById('dash-date-from').value = today; document.getElementById('dash-date-to').value = today; } 
+            else if (period === 'month') { document.getElementById('dash-date-from').value = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0]; document.getElementById('dash-date-to').value = today; }
+            updateDashboardStats();
+        };
+
+        window.onload = () => {
+            const today = getTodayDate();
+            document.getElementById('current-date-header').innerText = new Date().toDateString();
+            
+            // Dashboard defaults
+            document.getElementById('dash-date-from').value = today;
+            document.getElementById('dash-date-to').value = today;
+            
+            // Booking defaults
+            document.getElementById('visit-date').value = today;
+
+            // Expense defaults
+            document.getElementById('exp-date').value = today;
+
+            // P&L defaults
+            document.getElementById('pl-date-from').value = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+            document.getElementById('pl-date-to').value = today;
+            
+            updateDashboardStats();
+        };
+    </script>
+</body>
+</html>
